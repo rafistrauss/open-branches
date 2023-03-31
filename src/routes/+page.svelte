@@ -3,7 +3,7 @@
 	import { createEventDispatcher } from 'svelte';
 	const dispatch = createEventDispatcher();
 
-	import { getOpenBranches } from '../lib/util.js';
+	import { getOpenBranches } from '$lib/util.js';
 
 	let branchesByRepo;
 	let tokenInputValue = '';
