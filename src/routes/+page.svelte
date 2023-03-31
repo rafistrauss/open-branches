@@ -3,6 +3,8 @@
 	import { createEventDispatcher } from 'svelte';
 	const dispatch = createEventDispatcher();
 
+	import { version } from "../../package.json";
+
 	import { getOpenBranches } from '$lib/util.js';
 
 	let branchesByRepo;
@@ -16,14 +18,14 @@
 		tokenInputValue = githubToken;
 		const repoNamesString = localStorage.getItem('repoNames');
 		const repoNames = JSON.parse(repoNamesString);
-		repoNamesInputValue = repoNames;
+		repoNamesInputValue = repoNames ?? [];
 
 		if (githubToken && repoNames?.length) {
 			branchesByRepo = await getOpenBranches(githubToken, repoNames);
 		}
 	});
 	async function handleSubmit() {
-		const cleanedToken = tokenInputValue.trim();
+		const cleanedToken = tokenInputValue?.trim() ?? '';
 		const cleanedRepoNames = repoNamesInputValue.map((name) => name.trim()).filter(Boolean);
 
 		localStorage.setItem('githubToken', cleanedToken);
@@ -33,6 +35,7 @@
 	}
 
 	function addRepoName() {
+		console.log("TCL ~ file: +page.svelte:36 ~ addRepoName ~ addRepoName:", repoNamesInputValue)
 		repoNamesInputValue = [...repoNamesInputValue, ''];
 	}
 
@@ -61,6 +64,12 @@
 	}
 </script>
 
+
+<svelte:head>
+	<title>v{version}</title>
+</svelte:head>
+
+
 <main>
 	<h1>Open Branches</h1>
 
@@ -76,12 +85,15 @@
 				<br />
 				<label>
 					Repo Names:
-					{#each repoNamesInputValue as name, i}
+					{#if repoNamesInputValue?.length}
+						 <!-- content here -->
+						{#each repoNamesInputValue as name, i}
 						<div>
 							<input type="text" bind:value={repoNamesInputValue[i]} />
 							<button type="button" on:click={() => removeRepoName(i)}>Remove</button>
 						</div>
-					{/each}
+						{/each}
+					{/if}
 					<div>
 						<button type="button" on:click={addRepoName}>Add Repo</button>
 						<button type="button" on:click={showRepoNamesHelp}>?</button>
